@@ -9,14 +9,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/user', dataRoute)
 
-mongoose.connect('mongodb+srv://darywinata:zabuza0920@oneforall.ar0ve.mongodb.net/?retryWrites=true&w=majority')
-// const value = {
-//     nama : "Makan"
-// }
-
-// const createData = async (data) => {
-//     const dataValue = await Model.create(data)
-// }
+mongoose.connect('') // isi url mongo
 
 app.listen(port, () => {
     console.log(`server is running up on port ${port}`)
