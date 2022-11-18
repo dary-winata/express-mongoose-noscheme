@@ -1,15 +1,16 @@
 const express = require('express')
 const route = express.Router()
 const Model = require('./model')
+const { getDataMongoSrvc, insertDataMongoSrvc } = require('./services/mongodb')
 
-route.post('/', async (req, res) => {
-    await Model.deleteMany({})
-    const value = await Model.create(req.body).then((response) => console.log(response) ).catch((e) => console.log(e))
+
+route.post('/:colName', async (req, res) => {
+    await insertDataMongoSrvc(req.params.colName, req.body)
     res.status(200).json()
 })
 
-route.get('/', async (req, res) => {
-    const value = await Model.find()
+route.get('/:colName', async (req, res) => {
+    const value = await getDataMongoSrvc(req.params.colName)
     res.status(200).json(value)
 })
 
