@@ -1,21 +1,28 @@
-const mongoose = require('mongoose')
-const dataRoute = require('./route')
+const connectionCouchdb = require('./utils/dbCouch.connection')
+const connectionMongo = require('./utils/dbMongo.connection')
+const { connection } = require('mongoose')
+const routeGeneral = require('./routes')
+const { response } = require('express')
 const express = require('express')
-const axios = require('axios')
 const cors = require('cors')
-const cron = require('node-cron')
-const { updateCouchToMongo } = require('./services/mongodb')
 const port = 6969
+var coucDb = false
 
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.use('/db', dataRoute)
+app.use('/', routeGeneral)
 
-mongoose.connect('') // isi url mongo
+try{
+    connectionCouchdb().then((response) => console.log("database connected")).catch((e) => console.log(e))
+    coucDb = true
+    connectionMongo().then((response) => console.log("database mongo connected"))
+    coucDb = false
+} catch {
+    if(coucDb == false)
+        connectionMongo().then((response) => console.log("database mongo connected"))
+}
 
 app.listen(port, () => {
     console.log(`server is running up on port ${port}`)
 })
-
-cron.schedule('*/1 * * * *', () => updateCouchToMongo())

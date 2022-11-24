@@ -1,13 +1,18 @@
-const axios = require('axios')
-const urlStandart = "http://192.168.1.20:5984"
+const { getDataCouch, createDatabaseCouch, listAllDbCouch, createUsersCouch} = require('../controller/couchdb')
 
-const getCouchdb = async(url) => {
-    const urlGet = urlStandart + url
-    const response = await axios.get(urlGet).catch((response) => console.log(response))
-    
-    return response.data
+const getCouchDataSrvc = async(url) => await getDataCouch(url)
+
+const createDatabaseSrvc = async(url) => await createDatabaseCouch(url)
+
+const listAllDbsSrvc = async() => await listAllDbCouch()
+
+const createUserCouchSrvc = async(data) => {
+    await createUsersCouch(data)
 }
-
+ 
 module.exports = {
-    getCouchdb
+    getCouchDataSrvc,
+    createDatabaseSrvc,
+    listAllDbsSrvc,
+    createUserCouchSrvc
 }
