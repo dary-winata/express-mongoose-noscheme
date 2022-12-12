@@ -5,6 +5,11 @@ const getDataCouch = async (url) => {
     return await db.list({include_docs: true})
 }
 
+const insertDataCouch = async (url, data) => {
+    const db = await (await couch()).db.use(url)
+    return await db.insert(data)
+}
+
 const createDatabaseCouch = async (url) => await (await couch()).db.create(url)
 
 const listAllDbCouch = async () => await (await couch()).db.list()
@@ -18,5 +23,6 @@ module.exports = {
     getDataCouch,
     createDatabaseCouch,
     listAllDbCouch,
-    createUsersCouch
+    createUsersCouch,
+    insertDataCouch
 }

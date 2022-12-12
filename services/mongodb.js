@@ -1,3 +1,4 @@
+const { response } = require('express')
 const { getDataMongoCtrl, insertDataMongoCtrl, deleteDataMongoCtrl, getCollectionMongoCtrl} = require('../controller/mongodb')
 
 const getDataMongoSrvc = async(url) => await getDataMongoCtrl(url)

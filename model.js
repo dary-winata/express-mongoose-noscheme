@@ -5,6 +5,6 @@ const dataSchema = new Schema({
         type: String,
         default: () => " "
     }
-}, {strict: false})
+}, {strict: false, versionKey: false})
 
 module.exports = (collectionName) => {return model(collectionName, dataSchema)}

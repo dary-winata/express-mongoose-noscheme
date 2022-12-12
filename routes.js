@@ -1,4 +1,4 @@
-const { getCouchDataSrvc, createDatabaseSrvc, listAllDbsSrvc, createUserCouchSrvc } = require('./services/couchdb')
+const { getCouchDataSrvc, createDatabaseSrvc, listAllDbsSrvc, createUserCouchSrvc, insertDataCouchSrvc, syncDatabaseCouch } = require('./services/couchdb')
 const { getDataMongoSrvc, insertDataMongoSrvc, createCollectionMongoSrvc, getAllCollectionMongoSrvc } = require('./services/mongodb')
 const express = require('express')
 const Model = require('./model')
@@ -14,7 +14,10 @@ route.get('/:dbName/_all_docs', async(req, res) => {
             res.status(200).json(response)
         })
     } catch {
-        await getDataMongoSrvc(req.params.dbName).then((response) => res.status(200).json(response))
+        await getDataMongoSrvc(req.params.dbName).then((response) => res.status(200).json({
+            "total_rows" : response.length,
+            "rows" : response
+        }))
     }
 
 })
@@ -58,6 +61,31 @@ route.put('/_users/org.couchdb.user::paramUser', async (req, res) => {
     } catch {
         if(couchDb==false)
             await insertDataMongoSrvc("_users", data).then((reponse) => res.status(200).json("user already inputed")).catch((e) => console.log(e))
+        
+        couchDb = false
+    }
+})
+
+route.get('/recycle', async (req, res) => {
+    await syncDatabaseCouch().then((resp) => res.status(200).json("already sync"))
+})
+
+route.put('/:dbName/:dbId', async (req, res) => {
+    const id = req.params.dbId.replaceAll('"', '')
+    var data = req.body
+
+    data["_id"] = id
+
+    try{
+        await insertDataCouchSrvc(req.params.dbName, data).then((response) => { 
+            res.status(200).json("data already inputed")
+        }).catch((e) => console.log(e))
+        couchDb = true
+        await insertDataMongoSrvc(req.params.dbName, data).then((reponse) => res.status(200).json("data already inputed")).catch((e) => console.log(e))
+        couchDb = false
+    } catch {
+        if(couchDb==false)
+            await insertDataMongoSrvc(req.params.dbName, data).then((reponse) => res.status(200).json("data already inputed")).catch((e) => console.log(e))
         
         couchDb = false
     }
