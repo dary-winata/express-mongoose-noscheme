@@ -1,5 +1,5 @@
-const { getCouchDataSrvc, createDatabaseSrvc, listAllDbsSrvc, createUserCouchSrvc, insertDataCouchSrvc, syncDatabaseCouch } = require('./services/couchdb')
-const { getDataMongoSrvc, insertDataMongoSrvc, createCollectionMongoSrvc, getAllCollectionMongoSrvc } = require('./services/mongodb')
+const { getCouchDataSrvc, createDatabaseSrvc, listAllDbsSrvc, createUserCouchSrvc, insertDataCouchSrvc, syncDatabaseCouch, loginDatabaseCouch, registerDatabaseCouch } = require('./services/couchdb')
+const { getDataMongoSrvc, insertDataMongoSrvc, createCollectionMongoSrvc, getAllCollectionMongoSrvc, loginCustomerMongoSrvc, registerCustomerMongoSrvc } = require('./services/mongodb')
 const express = require('express')
 const Model = require('./model')
 const route = express.Router()
@@ -88,6 +88,62 @@ route.put('/:dbName/:dbId', async (req, res) => {
             await insertDataMongoSrvc(req.params.dbName, data).then((reponse) => res.status(200).json("data already inputed")).catch((e) => console.log(e))
         
         couchDb = false
+    }
+})
+
+route.post('/v1/user/login', async (req, res) => {
+    const user = req.body
+
+    try {
+        const value = await loginDatabaseCouch(user.username, user.password)
+        if(value)
+            res.status(200).json({
+                "status" : 200,
+                "message" : "login success",
+                "data" : true
+            })
+        else
+            res.status(400).json({
+                "status" : 400,
+                "message" : "credential wrong",
+                "data" : false
+            })
+    } catch (e) {
+        const value = await loginCustomerMongoSrvc(user.username, user.password)
+        if(value)
+            res.status(200).json({
+                "status" : 200,
+                "message" : "login success",
+                "data" : true
+            })
+        else
+            res.status(400).json({
+                "status" : 400,
+                "message" : "credential wrong",
+                "data" : false
+            })
+    }
+})
+
+route.post('/v1/user/register', async (req, res) => {
+    const user = req.body
+
+    try {
+        await registerDatabaseCouch(user.username, user.password, user.email).then((response) => {
+            res.status(200).json({
+                "status" : 200,
+                "message" : "user already created",
+                "data" : true
+            })
+        })
+    } catch {
+        await registerCustomerMongoSrvc(user.username, user.password, user.email).then((response) => {
+            res.status(200).json({
+                "status" : 200,
+                "message" : "user already created",
+                "data" : true
+            })
+        })
     }
 })
 

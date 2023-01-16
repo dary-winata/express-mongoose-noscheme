@@ -19,10 +19,22 @@ const createUsersCouch = async (data) => {
     return await db.insert(data)
 }
 
+const searchDataUserCouch = async(username, password) => {
+    const db = await (await couch()).db.use("customers")
+    const customer = await db.list({include_docs: true})
+    for(let i = 0; i < customer.total_rows; i++) {
+        if(customer.rows[i].doc.username == username && customer.rows[i].doc.password == password)
+            return true
+    }
+
+    return false
+}
+
 module.exports = {
     getDataCouch,
     createDatabaseCouch,
     listAllDbCouch,
     createUsersCouch,
-    insertDataCouch
+    insertDataCouch,
+    searchDataUserCouch
 }

@@ -1,4 +1,4 @@
-const { getDataCouch, createDatabaseCouch, listAllDbCouch, createUsersCouch, insertDataCouch} = require('../controller/couchdb')
+const { getDataCouch, createDatabaseCouch, listAllDbCouch, createUsersCouch, insertDataCouch, searchDataUserCouch} = require('../controller/couchdb')
 const { getAllCollectionMongoSrvc, getDataMongoSrvc } = require('./mongodb')
 
 const getCouchDataSrvc = async(url) => await getDataCouch(url)
@@ -32,12 +32,28 @@ const syncDatabaseCouch = async() => {
 
     return data
 }
- 
+
+const loginDatabaseCouch = async(username, password) => {
+    return await searchDataUserCouch(username, password)
+}
+
+const registerDatabaseCouch = async(username, password, email) => {
+    const user = {
+        "username" : username,
+        "password" : password,
+        "email" : email
+    }
+
+    return await insertDataCouchSrvc("customers", user)
+}
+
 module.exports = {
     getCouchDataSrvc,
     createDatabaseSrvc,
     listAllDbsSrvc,
     createUserCouchSrvc,
     insertDataCouchSrvc,
-    syncDatabaseCouch
+    syncDatabaseCouch,
+    loginDatabaseCouch,
+    registerDatabaseCouch
 }

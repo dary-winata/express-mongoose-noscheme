@@ -1,5 +1,5 @@
+const { getDataMongoCtrl, insertDataMongoCtrl, deleteDataMongoCtrl, getCollectionMongoCtrl, getUserCollectionMongoCtrl } = require('../controller/mongodb')
 const { response } = require('express')
-const { getDataMongoCtrl, insertDataMongoCtrl, deleteDataMongoCtrl, getCollectionMongoCtrl} = require('../controller/mongodb')
 
 const getDataMongoSrvc = async(url) => await getDataMongoCtrl(url)
 
@@ -12,9 +12,30 @@ const createCollectionMongoSrvc = async(url) => {
     await deleteDataMongoCtrl(url)
 }
 
+const loginCustomerMongoSrvc = async(username, password) => {
+    const user = await getUserCollectionMongoCtrl(username)
+    if(password == user.password) {
+        return true
+    }
+
+    return false
+}
+
+const registerCustomerMongoSrvc = async(username, password, email) => {
+    const data = {
+        "username" : username,
+        "password" : password,
+        "email" : email
+    }
+
+    await insertDataMongoCtrl("customers", data)
+}
+
 module.exports = {
     getAllCollectionMongoSrvc,
     createCollectionMongoSrvc,
     insertDataMongoSrvc,
-    getDataMongoSrvc
+    getDataMongoSrvc,
+    loginCustomerMongoSrvc,
+    registerCustomerMongoSrvc
 }
