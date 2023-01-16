@@ -136,6 +136,14 @@ route.post('/v1/user/register', async (req, res) => {
                 "data" : true
             })
         })
+        
+        await registerCustomerMongoSrvc(user.username, user.password, user.email).then((response) => {
+            res.status(200).json({
+                "status" : 200,
+                "message" : "user already created",
+                "data" : true
+            })
+        })
     } catch {
         await registerCustomerMongoSrvc(user.username, user.password, user.email).then((response) => {
             res.status(200).json({
